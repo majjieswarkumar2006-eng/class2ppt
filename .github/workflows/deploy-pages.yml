@@ -35,15 +35,19 @@ jobs:
       - name: Publish build output to repository root
         run: |
           cp dist/index.html index.html
-          rm -rf assets
-          cp -r dist/assets assets
+          rm -rf static
+          cp -r dist/static static
+          cp dist/.nojekyll .nojekyll
           if [ -f dist/favicon.svg ]; then cp dist/favicon.svg favicon.svg; fi
+          # Remove old assets folder from previous deploys (Jekyll conflict)
+          rm -rf assets
 
       - name: Commit and push static site
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html assets favicon.svg
+          git add index.html static .nojekyll favicon.svg
+          git add -u assets 2>/dev/null || true
           git diff --staged --quiet && echo "No changes to deploy" && exit 0
           git commit -m "deploy: static site to main root [skip ci]"
           git push

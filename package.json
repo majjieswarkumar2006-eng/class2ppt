@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/use-dev-index.mjs && vite",
+    "prebuild": "node scripts/use-dev-index.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "preview:pages": "vite preview --base /class2ppt/"
+    "preview": "vite preview"
   },
   "dependencies": {
     "lucide-react": "^1.17.0",

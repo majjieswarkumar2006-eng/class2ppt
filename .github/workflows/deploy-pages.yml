@@ -1,4 +1,4 @@
-name: Deploy static site to main root
+name: Deploy static site to GitHub Pages
 
 on:
   push:
@@ -6,15 +6,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: pages-main-root
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  deploy:
-    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,22 +33,18 @@ jobs:
       - name: Build static HTML/JS/CSS
         run: npm run build
 
-      - name: Publish build output to repository root
-        run: |
-          cp dist/index.html index.html
-          rm -rf static
-          cp -r dist/static static
-          cp dist/.nojekyll .nojekyll
-          if [ -f dist/favicon.svg ]; then cp dist/favicon.svg favicon.svg; fi
-          # Remove old assets folder from previous deploys (Jekyll conflict)
-          rm -rf assets
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
 
-      - name: Commit and push static site
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html static .nojekyll favicon.svg
-          git add -u assets 2>/dev/null || true
-          git diff --staged --quiet && echo "No changes to deploy" && exit 0
-          git commit -m "deploy: static site to main root [skip ci]"
-          git push
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

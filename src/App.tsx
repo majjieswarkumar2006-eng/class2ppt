@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Recorder from './components/Recorder';
@@ -166,6 +167,7 @@ export default function App() {
 
   return (
     <div className="app-grid">
+      <SpeedInsights />
       
       {/* 1. Collapsible sidebar */}
       <Sidebar

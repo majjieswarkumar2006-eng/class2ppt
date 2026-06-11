@@ -493,3 +493,49 @@ export async function chatWithTranscript(
   // General fallback
   return `I found that the lecture **"${session.title}"** focused on **${session.subject}**. The main topics discussed were:\n${session.topics.map((t, i) => `${i+1}. **${t.title}** (${t.time}) - *${t.description}*`).join('\n')}\n\nFeel free to ask a more specific question about these points or request slide summaries!`;
 }
+
+/**
+ * Simulates extracting a transcript from an online class link and generating a session.
+ * For demonstration purposes, it generates a mock transcript based on the provided title and then calls the main generation function.
+ */
+export async function generateSessionFromLink(
+  url: string,
+  title: string,
+  subject: string,
+  apiKey?: string
+): Promise<Session> {
+  // Simulate network delay for "downloading" and "extracting" transcript from video
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  // Generate a mock transcript snippet to pass to the AI
+  const mockTranscript = `[0s] Instructor: Welcome to our online session. Today we are discussing ${title} within the context of ${subject}. Let's dive into the core concepts based on the link provided: ${url}.`;
+
+  // Generate the structured result
+  const aiResult = await generateSessionFromTranscript(title, subject, mockTranscript, apiKey);
+
+  // Compile it into a complete Session object
+  const newSession: Session = {
+    id: `sess_link_${Date.now()}`,
+    title,
+    subject,
+    createdAt: Date.now(),
+    duration: 3600, // Simulated 1 hour session
+    summary: aiResult.summary,
+    keyPoints: aiResult.keyPoints,
+    topics: aiResult.topics,
+    examples: aiResult.examples,
+    slides: aiResult.slides,
+    speakers: [
+      { id: 'spk_instructor', name: 'Instructor', color: '#3b82f6', duration: 3000 }
+    ],
+    transcript: [
+      { id: 'tx_sim_1', speakerId: 'spk_instructor', time: 0, text: mockTranscript },
+      { id: 'tx_sim_2', speakerId: 'spk_instructor', time: 600, text: "The first key point is understanding the foundational principles. Are there any questions from the chat?" },
+      { id: 'tx_sim_3', speakerId: 'spk_instructor', time: 1800, text: "Let's move on to the practical application phase. We will look at some examples." },
+      { id: 'tx_sim_4', speakerId: 'spk_instructor', time: 3500, text: "That concludes our session. Thank you for watching. The slides and summary will be available in your dashboard." }
+    ],
+    screenshots: []
+  };
+
+  return newSession;
+}

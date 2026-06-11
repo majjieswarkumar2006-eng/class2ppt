@@ -1,8 +1,8 @@
-import { LayoutDashboard, Video, Settings, Sparkles, Database, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Video, Settings, Sparkles, Database, ShieldAlert, ShieldCheck, Link2 } from 'lucide-react';
 
 interface SidebarProps {
-  currentView: 'dashboard' | 'recorder' | 'settings' | 'session-view';
-  setView: (view: 'dashboard' | 'recorder' | 'settings') => void;
+  currentView: 'dashboard' | 'recorder' | 'settings' | 'session-view' | 'link-importer';
+  setView: (view: 'dashboard' | 'recorder' | 'settings' | 'link-importer') => void;
   apiKey: string;
   sessionCount: number;
 }
@@ -79,6 +79,21 @@ export default function Sidebar({ currentView, setView, apiKey, sessionCount }: 
             <Video size={18} />
             <span>Record Session</span>
             {currentView === 'recorder' && <span className="pulse-indicator" style={{ marginLeft: 'auto' }}></span>}
+          </button>
+
+          <button
+            onClick={() => setView('link-importer')}
+            className={`btn ${currentView === 'link-importer' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{
+              justifyContent: 'flex-start',
+              padding: '12px 16px',
+              border: 'none',
+              width: '100%',
+              background: currentView === 'link-importer' ? undefined : 'transparent'
+            }}
+          >
+            <Link2 size={18} />
+            <span>Import Link</span>
           </button>
 
           <button

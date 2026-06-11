@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Recorder from './components/Recorder';
+import LinkImporter from './components/LinkImporter';
 import SessionView from './components/SessionView';
 import Settings from './components/Settings';
 import { LecturaDB } from './utils/db';
@@ -9,7 +10,7 @@ import type { Session } from './utils/db';
 import { generateSessionFromTranscript } from './utils/gemini';
 
 export default function App() {
-  const [currentView, setView] = useState<'dashboard' | 'recorder' | 'settings' | 'session-view'>('dashboard');
+  const [currentView, setView] = useState<'dashboard' | 'recorder' | 'settings' | 'session-view' | 'link-importer'>('dashboard');
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [apiKey, setApiKey] = useState('');
@@ -159,7 +160,7 @@ export default function App() {
     }
   };
 
-  const handleSidebarViewSwitch = (view: 'dashboard' | 'recorder' | 'settings') => {
+  const handleSidebarViewSwitch = (view: 'dashboard' | 'recorder' | 'settings' | 'link-importer') => {
     setView(view);
     setSelectedSession(null);
   };
@@ -215,6 +216,13 @@ export default function App() {
             <Recorder
               apiKey={apiKey}
               onRecordingComplete={handleRecordingComplete}
+            />
+          )}
+
+          {currentView === 'link-importer' && (
+            <LinkImporter
+              apiKey={apiKey}
+              onImportComplete={handleRecordingComplete}
             />
           )}
 
